@@ -9,6 +9,8 @@ RF24 radio(pinCE, pinCSN);    // Instanciation du NRF24L01
 
 const byte adresse[6] = tunnel;       // Mise au format "byte array" du nom du tunnel
 char message[32];                     // Avec cette librairie, on est "limité" à 32 caractères par message
+int val = 0;
+float f_val = 0;
 
 void setup() {
     // Initialisation du port série (pour afficher les infos reçues, sur le "Moniteur Série" de l'IDE Arduino)
@@ -27,7 +29,8 @@ void setup() {
 void loop() {
     // On vérifie à chaque boucle si un message est arrivé
     if (radio.available()) {
-        radio.read(&message, sizeof(message));                        // Si un message vient d'arriver, on le charge dans la variable "message"
-        Serial.print("Message reçu : "); Serial.println(message);     // … et on l'affiche sur le port série !
+        radio.read(&val, sizeof(val));                                // Si un message vient d'arriver, on le charge dans la variable "message"
+        f_val = (float)val/10.0;
+        Serial.print("Message reçu : "); Serial.println(val);         // … et on l'affiche sur le port série !
     }
 }

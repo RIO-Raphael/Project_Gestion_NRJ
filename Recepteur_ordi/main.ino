@@ -26,11 +26,13 @@ void setup() {
     Serial.print("Config OK !\n\r");
 }
 
+int cp = 0; // count the number of received datas
 void loop() {
     // On vérifie à chaque boucle si un message est arrivé
     if (radio.available()) {
+        cp ++;
         radio.read(&val, sizeof(val));                                // Si un message vient d'arriver, on le charge dans la variable "message"
         f_val = (float)val/10.0;
-        Serial.print("Message reçu : "); Serial.println(val);         // … et on l'affiche sur le port série !
+        Serial.print(cp); Serial.print(" : "); Serial.println(f_val);         // … et on l'affiche sur le port série !
     }
 }

@@ -18,10 +18,8 @@ DallasTemperature sensors(&oneWire);
 char* char_temp = new char[10];
 
 void TEMP_setup(void) 
-{ 
- // start serial port 
- Serial.begin(115200); 
- Serial.println("Dallas Temperature IC Control Library Demo"); 
+{  
+ Serial.println("Dallas Temperature Sensor"); 
  // Start up the library 
  sensors.begin(); 
 }

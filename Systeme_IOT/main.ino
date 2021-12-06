@@ -6,8 +6,8 @@
 #define pinCE           7             // On associe la broche "CE" du NRF24L01 à la sortie digitale D7 de l'arduino
 #define pinCSN          8             // On associe la broche "CSN" du NRF24L01 à la sortie digitale D8 de l'arduino
 #define tunnel          "PP123"       // On définit un "nom de tunnel" (5 caractères), pour pouvoir communiquer d'un NRF24 à l'autre
-#define TIME_SLEEP_S    1000          // in s
-#define TIME_ONE_SLEEP  1             // in s
+#define TIME_SLEEP_S    10            // in s
+#define TIME_ONE_SLEEP  2             // in s
 RF24 radio(pinCE, pinCSN);            // Instanciation du NRF24L01
 
 const byte adresse[6] = tunnel;               // Mise au format "byte array" du nom du tunnel
@@ -23,16 +23,26 @@ void setup() {
   TEMP_setup();                       // Arrêt de l'écoute du NRF24 (signifiant qu'on va émettre, et non recevoir, ici)
   // Triggers a TIME_SLEEP_MS ms sleep (the device will be woken up only by the registered wakeup sources and by internal RTC)
   // The power consumption of the chip will drop consistently
-  nb_time_go_in_sleep = TIME_SLEEP_S / TIME_ONE_SLEEP;
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);  
+  if (TIME_SLEEP_S > TIME_ONE_SLEEP){
+    nb_time_go_in_sleep = TIME_SLEEP_S / TIME_ONE_SLEEP;
+  }
+  LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);  
 }
 
 void loop() {
   val = TEMP_mes();
-  Serial.println(val);
+  // DEBUG
+  //Serial.println(val);
+  // Send the data
   radio.write(&val, sizeof(val));     // Envoi de notre message
+  // We enter in power down mode for the RF module. We go from 26µA to 0.9µA
+  radio.powerDown();
+  
+  // SLEEP MODE LOOP
   int i = 0;
   for (i=0; i < nb_time_go_in_sleep; i++){
-    LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);
+    LowPower.powerDown(SLEEP_2S, ADC_OFF, BOD_OFF);
   }
+  // We leave the power down mode (RF module)
+  radio.powerUp();
 }
